@@ -58,9 +58,12 @@
 	
 	var _store2 = _interopRequireDefault(_store);
 	
+	var _todo_actions = __webpack_require__(193);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	window.store = (0, _store2.default)();
+	window.requestTodos = _todo_actions.requestTodos;
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var root = document.querySelector("#content");
@@ -21458,10 +21461,14 @@
 	
 	var _root_reducer2 = _interopRequireDefault(_root_reducer);
 	
+	var _master_middleware = __webpack_require__(191);
+	
+	var _master_middleware2 = _interopRequireDefault(_master_middleware);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var configureStore = function configureStore() {
-	  return (0, _redux.createStore)(_root_reducer2.default);
+	  return (0, _redux.createStore)(_root_reducer2.default, _master_middleware2.default);
 	};
 	
 	exports.default = configureStore;
@@ -22373,13 +22380,10 @@
 	
 	var _todos_reducer2 = _interopRequireDefault(_todos_reducer);
 	
-	var _selector = __webpack_require__(190);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var RootReducer = (0, _redux.combineReducers)({
-	  TodosReducer: _todos_reducer2.default,
-	  allTodos: _selector.allTodos
+	  TodosReducer: _todos_reducer2.default
 	});
 	
 	exports.default = RootReducer;
@@ -22409,10 +22413,12 @@
 	};
 	
 	var TodosReducer = function TodosReducer() {
-	  var state = arguments.length <= 0 || arguments[0] === undefined ? defaultState : arguments[0];
+	  var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	  var action = arguments[1];
 	
 	  switch (action.type) {
+	    case "RECEIVE_TODOS":
+	      return action.todos;
 	    default:
 	      return state;
 	  }
@@ -22421,7 +22427,65 @@
 	exports.default = TodosReducer;
 
 /***/ },
-/* 190 */
+/* 190 */,
+/* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _redux = __webpack_require__(173);
+	
+	var _todo_middleware = __webpack_require__(192);
+	
+	var _todo_middleware2 = _interopRequireDefault(_todo_middleware);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var masterMiddleware = (0, _redux.applyMiddleware)(_todo_middleware2.default);
+	
+	exports.default = masterMiddleware;
+
+/***/ },
+/* 192 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _todo_actions = __webpack_require__(193);
+	
+	var _todo_api_util = __webpack_require__(194);
+	
+	var todoMiddleware = function todoMiddleware(_ref) {
+	  var getState = _ref.getState;
+	  var dispatch = _ref.dispatch;
+	  return function (next) {
+	    return function (action) {
+	      switch (action.type) {
+	        case "REQUEST_TODOS":
+	          var success = function success(data) {
+	            return dispatch((0, _todo_actions.receiveTodos)(data));
+	          };
+	          (0, _todo_api_util.fetchTodos)(success);
+	          break;
+	        default:
+	          next(action);
+	      }
+	    };
+	  };
+	};
+	
+	exports.default = todoMiddleware;
+
+/***/ },
+/* 193 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22429,10 +22493,39 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var allTodos = exports.allTodos = function allTodos(state) {
-	  return state ? Object.keys(state.todos).map(function (key) {
-	    return state.todos[key];
-	  }) : [];
+	var TodosConstants = exports.TodosConstants = {
+	  REQUEST_TODOS: "REQUEST_TODOS",
+	  RECEIVE_TODOS: "RECEIVE_TODOS"
+	};
+	
+	var requestTodos = exports.requestTodos = function requestTodos() {
+	  return {
+	    type: TodosConstants.REQUEST_TODOS
+	  };
+	};
+	
+	var receiveTodos = exports.receiveTodos = function receiveTodos(todos) {
+	  return {
+	    type: TodosConstants.RECEIVE_TODOS,
+	    todos: todos
+	  };
+	};
+
+/***/ },
+/* 194 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var fetchTodos = exports.fetchTodos = function fetchTodos(success) {
+	  $.ajax({
+	    method: 'GET',
+	    url: 'api/todos',
+	    success: success
+	  });
 	};
 
 /***/ }

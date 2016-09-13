@@ -4,10 +4,10 @@ export const TodosConstants = {
 };
 
 export const requestTodos = () => ({
-  type: REQUEST_TODOS
+  type: TodosConstants.REQUEST_TODOS
 });
 
 export const receiveTodos = (todos) => ({
-  type: RECEIVE_TODOS,
+  type: TodosConstants.RECEIVE_TODOS,
   todos
 });
