@@ -22437,9 +22437,9 @@
 	});
 	var allTodos = exports.allTodos = function allTodos(state) {
 	  var array = [];
-	  array.push(Object.keys(state.todos).map(function (key) {
+	  array = Object.keys(state.todos).map(function (key) {
 	    return state.todos[key];
-	  }));
+	  });
 	  return array;
 	};
 
@@ -22511,7 +22511,9 @@
 	});
 	var TodosConstants = exports.TodosConstants = {
 	  REQUEST_TODOS: "REQUEST_TODOS",
-	  RECEIVE_TODOS: "RECEIVE_TODOS"
+	  RECEIVE_TODOS: "RECEIVE_TODOS",
+	  CREATE_TODO: "CREATE_TODO",
+	  RECEIVE_TODO: "RECEIVE_TODO"
 	};
 	
 	var requestTodos = exports.requestTodos = function requestTodos() {
@@ -22524,6 +22526,19 @@
 	  return {
 	    type: TodosConstants.RECEIVE_TODOS,
 	    todos: todos
+	  };
+	};
+	
+	var createTodo = exports.createTodo = function createTodo() {
+	  return {
+	    type: TodosConstants.CREATE_TODO
+	  };
+	};
+	
+	var receiveTodo = exports.receiveTodo = function receiveTodo(todo) {
+	  return {
+	    type: TodosConstants.RECEIVE_TODO,
+	    todo: todo
 	  };
 	};
 
@@ -23373,6 +23388,10 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _todo_list_item = __webpack_require__(208);
+	
+	var _todo_list_item2 = _interopRequireDefault(_todo_list_item);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23401,7 +23420,9 @@
 	      return _react2.default.createElement(
 	        'ul',
 	        null,
-	        this.props.title
+	        this.props.todos.map(function (todo) {
+	          return _react2.default.createElement(_todo_list_item2.default, { key: todo.id, todo: todo });
+	        })
 	      );
 	    }
 	  }]);
@@ -23410,6 +23431,55 @@
 	}(_react2.default.Component);
 	
 	exports.default = TodoList;
+
+/***/ },
+/* 208 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TodoListItem = function (_React$Component) {
+	  _inherits(TodoListItem, _React$Component);
+	
+	  function TodoListItem(props) {
+	    _classCallCheck(this, TodoListItem);
+	
+	    return _possibleConstructorReturn(this, (TodoListItem.__proto__ || Object.getPrototypeOf(TodoListItem)).call(this, props));
+	  }
+	
+	  _createClass(TodoListItem, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'li',
+	        null,
+	        this.props.todo.title
+	      );
+	    }
+	  }]);
+	
+	  return TodoListItem;
+	}(_react2.default.Component);
+	
+	exports.default = TodoListItem;
 
 /***/ }
 /******/ ]);
