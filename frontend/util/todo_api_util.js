@@ -5,3 +5,12 @@ export const fetchTodos = (success) => {
     success
   });
 };
+
+export const createTodo = (todo, success) => {
+  $.ajax({
+    method: 'POST',
+    url: 'api/todos',
+    data: {todo},
+    success
+   });
+};

@@ -17,6 +17,11 @@ const TodosReducer = (state = {}, action) => {
   switch(action.type) {
     case "RECEIVE_TODOS":
       return action.todos;
+    case "RECEIVE_TODO":
+      return [
+        ...state,
+        action.todo
+      ];
     default:
       return state;
   }

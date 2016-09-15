@@ -14,11 +14,14 @@ export const receiveTodos = (todos) => ({
   todos
 });
 
-export const createTodo = () => ({
-  type: TodosConstants.CREATE_TODO
-})
+export const createTodo = (todo) => {
+  return {
+  type: TodosConstants.CREATE_TODO,
+  todo
+  }
+};
 
 export const receiveTodo = (todo) => ({
   type: TodosConstants.RECEIVE_TODO,
   todo
-})
+});
