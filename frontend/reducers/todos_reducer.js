@@ -22,6 +22,14 @@ const TodosReducer = (state = {}, action) => {
         ...state,
         action.todo
       ];
+    case "REMOVE_TODO":
+      const idx = state.indexOf(action.todo)
+      if (idx !== -1){
+        return [
+          ...state.slice(0, idx),
+          ...state.slice(idx + 1)
+        ];
+      }
     default:
       return state;
   }

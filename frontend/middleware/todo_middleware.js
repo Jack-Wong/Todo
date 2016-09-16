@@ -14,6 +14,14 @@ const todoMiddleware = ({getState, dispatch}) => next => action => {
       success = data => dispatch(receiveTodo(data));
       createTodo(action.todo, success);
       break;
+    case TodosConstants.UPDATE_TODO:
+      success = data => dispatch(receiveTodo(data));
+      updateTodo(action.todo, success);
+      break;
+    case TodosConstants.DESTROY_TODO:
+      success = data => dispatch(removeTodo(data));
+      destroyTodo(action.todo, success);
+      break;
     default:
       return next(action);
   }

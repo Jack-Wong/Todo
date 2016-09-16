@@ -22427,6 +22427,11 @@
 	      return action.todos;
 	    case "RECEIVE_TODO":
 	      return [].concat(_toConsumableArray(state), [action.todo]);
+	    case "REMOVE_TODO":
+	      var idx = state.indexOf(action.todo);
+	      if (idx !== -1) {
+	        return [].concat(_toConsumableArray(state.slice(0, idx)), _toConsumableArray(state.slice(idx + 1)));
+	      }
 	    default:
 	      return state;
 	  }
@@ -22488,6 +22493,18 @@
 	          };
 	          (0, _todo_api_util.createTodo)(action.todo, success);
 	          break;
+	        case _todo_actions.TodosConstants.UPDATE_TODO:
+	          success = function success(data) {
+	            return dispatch((0, _todo_actions.receiveTodo)(data));
+	          };
+	          updateTodo(action.todo, success);
+	          break;
+	        case _todo_actions.TodosConstants.DESTROY_TODO:
+	          success = function success(data) {
+	            return dispatch(removeTodo(data));
+	          };
+	          destroyTodo(action.todo, success);
+	          break;
 	        default:
 	          return next(action);
 	      }
@@ -22510,7 +22527,10 @@
 	  REQUEST_TODOS: "REQUEST_TODOS",
 	  RECEIVE_TODOS: "RECEIVE_TODOS",
 	  CREATE_TODO: "CREATE_TODO",
-	  RECEIVE_TODO: "RECEIVE_TODO"
+	  RECEIVE_TODO: "RECEIVE_TODO",
+	  TOGGLE_TODO: "TOGGLE_TODO",
+	  DESTROY_TODO: "DESTROY_TODO",
+	  REMOVE_TODO: "REMOVE_TODO"
 	};
 	
 	var requestTodos = exports.requestTodos = function requestTodos() {
@@ -22539,6 +22559,27 @@
 	    todo: todo
 	  };
 	};
+	
+	var toggleTodo = exports.toggleTodo = function toggleTodo(todo) {
+	  return {
+	    type: TodosConstants.TOGGLE_TODO,
+	    todo: todo
+	  };
+	};
+	
+	var destroyTodo = exports.destroyTodo = function destroyTodo(todo) {
+	  return {
+	    type: TodosConstants.DESTROY_TODO,
+	    todo: todo
+	  };
+	};
+	
+	var removeTodo = exports.removeTodo = function removeTodo(todo) {
+	  return {
+	    type: TodosConstants.REMOVE_TODO,
+	    todo: todo
+	  };
+	};
 
 /***/ },
 /* 193 */
@@ -22562,6 +22603,23 @@
 	    method: 'POST',
 	    url: 'api/todos',
 	    data: { todo: todo },
+	    success: success
+	  });
+	};
+	
+	var updateTodo = exports.updateTodo = function updateTodo(todo, success) {
+	  $.ajax({
+	    method: 'PATCH',
+	    url: 'api/todos/${todo.id}',
+	    data: { todo: todo },
+	    success: success
+	  });
+	};
+	
+	var destroyTodo = exports.destroyTodo = function destroyTodo(todo, success) {
+	  $.ajax({
+	    method: 'DELETE',
+	    url: 'api/todos/${todo.id}',
 	    success: success
 	  });
 	};
@@ -23393,6 +23451,12 @@
 	    },
 	    createTodo: function createTodo(todo) {
 	      return dispatch((0, _todo_actions.createTodo)(todo));
+	    },
+	    toggleTodo: function toggleTodo(todo) {
+	      return dispatch((0, _todo_actions.toggleTodo)(todo));
+	    },
+	    destroyTodo: function destroyTodo(todo) {
+	      return dispatch((0, _todo_actions.destroyTodo)(todo));
 	    }
 	  };
 	};
@@ -23448,6 +23512,8 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+	
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -23455,7 +23521,7 @@
 	          'ul',
 	          null,
 	          this.props.todos.map(function (todo) {
-	            return _react2.default.createElement(_todo_list_item2.default, { key: todo.id, todo: todo });
+	            return _react2.default.createElement(_todo_list_item2.default, { key: todo.id, todo: todo, toggleTodo: _this2.props.toggleTodo, destroyTodo: _this2.props.destroyTodo });
 	          })
 	        ),
 	        _react2.default.createElement(_todo_form2.default, { createTodo: this.props.createTodo })
@@ -23472,7 +23538,7 @@
 /* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -23498,16 +23564,36 @@
 	  function TodoListItem(props) {
 	    _classCallCheck(this, TodoListItem);
 	
-	    return _possibleConstructorReturn(this, (TodoListItem.__proto__ || Object.getPrototypeOf(TodoListItem)).call(this, props));
+	    var _this = _possibleConstructorReturn(this, (TodoListItem.__proto__ || Object.getPrototypeOf(TodoListItem)).call(this, props));
+	
+	    _this.state = {
+	      done: false
+	    };
+	    return _this;
 	  }
 	
 	  _createClass(TodoListItem, [{
-	    key: 'render',
+	    key: "handleClick",
+	    value: function handleClick() {
+	      var _this2 = this;
+	
+	      return function (event) {
+	        event.preventDefault();
+	        _this2.props.toggleTodo(_this2.props.todo);
+	      };
+	    }
+	  }, {
+	    key: "render",
 	    value: function render() {
 	      return _react2.default.createElement(
-	        'li',
+	        "li",
 	        null,
-	        this.props.todo.title
+	        this.props.todo.title,
+	        _react2.default.createElement(
+	          "button",
+	          { onClick: this.handleClick() },
+	          this.state.done ? "Undo" : "Done"
+	        )
 	      );
 	    }
 	  }]);
