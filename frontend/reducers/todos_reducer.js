@@ -1,29 +1,13 @@
-const defaultState = {
-  "1": {
-    id: 1,
-    title: "wash car",
-    body: "with soap",
-    done: false
-  },
-  "2": {
-    id: 2,
-    title: "wash dog",
-    body: "with shampoo",
-    done: true
-  }
-};
-
 const TodosReducer = (state = {}, action) => {
   switch(action.type) {
     case "RECEIVE_TODOS":
-      return action.todos;
+      let newState = {};
+      action.todos.forEach(todo => newState[todo.id] = todo);
+      return newState;
     case "RECEIVE_TODO":
-      return [
-        ...state,
-        action.todo
-      ];
+      newState = {[action.todo.id]: action.todo};
+      return Object.assign({}, state, newState)
     case "REMOVE_TODO":
-      const idx = state.indexOf(action.todo)
       if (idx !== -1){
         return [
           ...state.slice(0, idx),

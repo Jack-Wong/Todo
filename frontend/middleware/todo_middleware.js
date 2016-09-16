@@ -3,6 +3,7 @@ import { fetchTodos } from '../util/todo_api_util';
 import { receiveTodos } from '../actions/todo_actions';
 import { createTodo } from '../util/todo_api_util';
 import { receiveTodo } from '../actions/todo_actions';
+import { updateTodo } from '../util/todo_api_util';
 
 const todoMiddleware = ({getState, dispatch}) => next => action => {
   switch(action.type){

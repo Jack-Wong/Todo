@@ -4,8 +4,9 @@ class TodoListItem extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      done: false
+      detail: false
     };
+    this.toggleDetail = this.toggleDetail.bind(this)
   }
 
   handleClick() {
@@ -15,11 +16,16 @@ class TodoListItem extends React.Component {
     };
   }
 
+  toggleDetail(event){
+    event.preventDefault();
+    this.setState({detail: !this.state.detail});
+  }
+
   render() {
     return (
       <li>
-      {this.props.todo.title}
-      <button onClick={this.handleClick()}>{ this.state.done ? "Undo" : "Done"}</button>
+      <a onClick={this.toggleDetail}>{this.props.todo.title}</a>
+      <button onClick={this.handleClick()}>{ this.props.todo.done ? "Undo" : "Done"}</button>
       </li>
     )
   }

@@ -3,9 +3,9 @@ export const TodosConstants = {
   RECEIVE_TODOS: "RECEIVE_TODOS",
   CREATE_TODO: "CREATE_TODO",
   RECEIVE_TODO: "RECEIVE_TODO",
-  TOGGLE_TODO: "TOGGLE_TODO",
+  UPDATE_TODO: "UPDATE_TODO",
   DESTROY_TODO: "DESTROY_TODO",
-  REMOVE_TODO: "REMOVE_TODO"
+  REMOVE_TODO: "REMOVE_TODO",
 };
 
 export const requestTodos = () => ({
@@ -28,8 +28,8 @@ export const receiveTodo = (todo) => ({
 });
 
 export const toggleTodo = (todo) => ({
-  type: TodosConstants.TOGGLE_TODO,
-  todo
+  type: TodosConstants.UPDATE_TODO,
+  todo: Object.assign({}, todo, {done: !todo.done})
 });
 
 export const destroyTodo = (todo) => ({

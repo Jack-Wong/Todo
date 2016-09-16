@@ -22401,40 +22401,45 @@
 	  value: true
 	});
 	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
-	var defaultState = {
-	  "1": {
-	    id: 1,
-	    title: "wash car",
-	    body: "with soap",
-	    done: false
-	  },
-	  "2": {
-	    id: 2,
-	    title: "wash dog",
-	    body: "with shampoo",
-	    done: true
-	  }
-	};
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 	
 	var TodosReducer = function TodosReducer() {
 	  var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	  var action = arguments[1];
 	
-	  switch (action.type) {
-	    case "RECEIVE_TODOS":
-	      return action.todos;
-	    case "RECEIVE_TODO":
-	      return [].concat(_toConsumableArray(state), [action.todo]);
-	    case "REMOVE_TODO":
-	      var idx = state.indexOf(action.todo);
-	      if (idx !== -1) {
-	        return [].concat(_toConsumableArray(state.slice(0, idx)), _toConsumableArray(state.slice(idx + 1)));
-	      }
-	    default:
-	      return state;
-	  }
+	  var _ret = function () {
+	    switch (action.type) {
+	      case "RECEIVE_TODOS":
+	        var newState = {};
+	        action.todos.forEach(function (todo) {
+	          return newState[todo.id] = todo;
+	        });
+	        return {
+	          v: newState
+	        };
+	      case "RECEIVE_TODO":
+	        newState = _defineProperty({}, action.todo.id, action.todo);
+	        return {
+	          v: Object.assign({}, state, newState)
+	        };
+	      case "REMOVE_TODO":
+	        if (idx !== -1) {
+	          return {
+	            v: [].concat(_toConsumableArray(state.slice(0, idx)), _toConsumableArray(state.slice(idx + 1)))
+	          };
+	        }
+	      default:
+	        return {
+	          v: state
+	        };
+	    }
+	  }();
+	
+	  if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
 	};
 	
 	exports.default = TodosReducer;
@@ -22497,7 +22502,7 @@
 	          success = function success(data) {
 	            return dispatch((0, _todo_actions.receiveTodo)(data));
 	          };
-	          updateTodo(action.todo, success);
+	          (0, _todo_api_util.updateTodo)(action.todo, success);
 	          break;
 	        case _todo_actions.TodosConstants.DESTROY_TODO:
 	          success = function success(data) {
@@ -22528,7 +22533,7 @@
 	  RECEIVE_TODOS: "RECEIVE_TODOS",
 	  CREATE_TODO: "CREATE_TODO",
 	  RECEIVE_TODO: "RECEIVE_TODO",
-	  TOGGLE_TODO: "TOGGLE_TODO",
+	  UPDATE_TODO: "UPDATE_TODO",
 	  DESTROY_TODO: "DESTROY_TODO",
 	  REMOVE_TODO: "REMOVE_TODO"
 	};
@@ -22562,8 +22567,8 @@
 	
 	var toggleTodo = exports.toggleTodo = function toggleTodo(todo) {
 	  return {
-	    type: TodosConstants.TOGGLE_TODO,
-	    todo: todo
+	    type: TodosConstants.UPDATE_TODO,
+	    todo: Object.assign({}, todo, { done: !todo.done })
 	  };
 	};
 	
@@ -22610,7 +22615,7 @@
 	var updateTodo = exports.updateTodo = function updateTodo(todo, success) {
 	  $.ajax({
 	    method: 'PATCH',
-	    url: 'api/todos/${todo.id}',
+	    url: 'api/todos/' + todo.id,
 	    data: { todo: todo },
 	    success: success
 	  });
@@ -22619,7 +22624,7 @@
 	var destroyTodo = exports.destroyTodo = function destroyTodo(todo, success) {
 	  $.ajax({
 	    method: 'DELETE',
-	    url: 'api/todos/${todo.id}',
+	    url: 'api/todos/' + todo.id,
 	    success: success
 	  });
 	};
@@ -23520,8 +23525,8 @@
 	        _react2.default.createElement(
 	          'ul',
 	          null,
-	          this.props.todos.map(function (todo) {
-	            return _react2.default.createElement(_todo_list_item2.default, { key: todo.id, todo: todo, toggleTodo: _this2.props.toggleTodo, destroyTodo: _this2.props.destroyTodo });
+	          this.props.todos.map(function (todo, idx) {
+	            return _react2.default.createElement(_todo_list_item2.default, { key: idx, todo: todo, toggleTodo: _this2.props.toggleTodo, destroyTodo: _this2.props.destroyTodo });
 	          })
 	        ),
 	        _react2.default.createElement(_todo_form2.default, { createTodo: this.props.createTodo })
@@ -23567,8 +23572,9 @@
 	    var _this = _possibleConstructorReturn(this, (TodoListItem.__proto__ || Object.getPrototypeOf(TodoListItem)).call(this, props));
 	
 	    _this.state = {
-	      done: false
+	      detail: false
 	    };
+	    _this.toggleDetail = _this.toggleDetail.bind(_this);
 	    return _this;
 	  }
 	
@@ -23583,16 +23589,26 @@
 	      };
 	    }
 	  }, {
+	    key: "toggleDetail",
+	    value: function toggleDetail(event) {
+	      event.preventDefault();
+	      this.setState({ detail: !this.state.detail });
+	    }
+	  }, {
 	    key: "render",
 	    value: function render() {
 	      return _react2.default.createElement(
 	        "li",
 	        null,
-	        this.props.todo.title,
+	        _react2.default.createElement(
+	          "a",
+	          { onClick: this.toggleDetail },
+	          this.props.todo.title
+	        ),
 	        _react2.default.createElement(
 	          "button",
 	          { onClick: this.handleClick() },
-	          this.state.done ? "Undo" : "Done"
+	          this.props.todo.done ? "Undo" : "Done"
 	        )
 	      );
 	    }
