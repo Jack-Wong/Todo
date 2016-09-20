@@ -54,7 +54,10 @@ Rails.application.routes.draw do
   #     resources :products
   #   end
   namespace :api, defaults: {format: :jason} do
-    resources :todos, only: [:index, :show, :create, :destroy, :update]
+    resources :todos, only: [:index, :show, :create, :destroy, :update] do
+      resources :steps, only: [:index, :create]
+    end
+    resources :steps, only: [:update, :destroy]
   end
 
   root to: 'static_pages#root'

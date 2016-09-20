@@ -15,7 +15,7 @@ class Api::TodosController < ApplicationController
     if @todo.save
       render json: @todo
     else
-      render json: @todo.erros.full_messages
+      render json: @todo.errors.full_messages
     end
   end
 
@@ -36,7 +36,6 @@ class Api::TodosController < ApplicationController
 
   private
   def todo_params
-    puts params
     params.require(:todo).permit(:title, :body, :done)
   end
 end
